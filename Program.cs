@@ -21,28 +21,42 @@ namespace WebAPIClient
         public async static Task Main(string[] args)
         {
 
+            // Login with user information with a POST method
             var loginResponse = await Login();
 
+            // The login generates the access token, obtained in "loginResponse"
             JObject jtoken = new JObject();
             jtoken = JObject.Parse(loginResponse);
             token.AccessToken=jtoken["accessToken"].ToString();
        
-
+            // With the object "token", the job is requested with a GET method
             var jobString = await RequestJob();
+
+            // The GET sends the job in "jobString", that is used to set the "job" object, with all job's data
             JObject jjob = new JObject();
             jjob = JObject.Parse(jobString);
-            
             BuildJob(jjob, job);
             
+            // Prints in Console all data related to the job (id, type and genetic data)
+            Console.WriteLine("Job received: ");
             jprocessor.PrintJob();
+
+            // The class for processing the genetic data, JobProcessor, is called under the object jprocessor. The solution is obtained in BuildMessageSoluction
             var message = BuildMessageSolution();
-            //var r = jprocessor.BeginProcess();
+            Console.WriteLine("Message sent: ");
             Console.WriteLine(message);
+
+            // The job solution is then send by POST. The return message is the last thing printed.
             var finalResponse = await PostMessage(message);
+            Console.WriteLine("Response after sent job: ");
             Console.WriteLine(finalResponse);
 
 
         }
+
+        /*
+        * Assyncronous method to do the login with the user set in "user" object. It obtains and then returns the access token for the user. 
+        */
         private static async Task<string> Login()
         {
             var user = new User();
@@ -65,18 +79,23 @@ namespace WebAPIClient
 
         }
 
+        /*
+        * Assyncronous method to request a new job after the successful login. Returns the job as a string.
+        */
         private static async Task <string> RequestJob(){
 
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization =  new AuthenticationHeaderValue("Bearer", token.AccessToken);
 
             var response = await client.GetStringAsync("https://gene.lacuna.cc/api/dna/jobs");
-            //var job = await JsonSerializer.DeserializeAsync<Job>(response);
 
             return response;
 
         }
 
+        /*
+        * The solution in the send back by the this assyncronous method. It returns the acceptance/error message as a string.
+        */
         private static async Task<string> PostMessage(string message)
         {
             
@@ -107,6 +126,9 @@ namespace WebAPIClient
 
         }
 
+        /*
+        * "job" object is build, receiving its data from a previous build Json object.
+        */
         private static void BuildJob(JObject json, Job job){
 
             job.Id=json["job"]["id"].ToString();
@@ -130,6 +152,9 @@ namespace WebAPIClient
 
         }
 
+        /*
+        * Job is solved according to its type (decode, encode or check gene). Returns the string with the solution.
+        */
         private static string BuildMessageSolution(){
             string message="";
             switch (job.Type){

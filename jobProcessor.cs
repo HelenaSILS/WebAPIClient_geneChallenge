@@ -123,8 +123,8 @@ namespace WebAPIClient
          int geneHalf = (int) Math.Round((float) gene.Length/2);
 
         /*
-        * The reasoning of the following block is that we must check if, at least every possible half of the gene is
-        * in the strand thus, we must begin with the character 0 until the half way, always comparing only 50% of the whole
+        * The reasoning of the following code block is that we must check if, at least every possible half of the gene is
+        * in the strand, thus, we must begin with the character 0 until the half way, always comparing only 50% of the whole
         * size of the gene, and then look if the strand contains such substring.
         * Once found, the search cand be stopped and it returns true. Otherwise, it stops when it reaches the gene's middle.
         */
@@ -151,16 +151,23 @@ namespace WebAPIClient
     }
 
     /*
-    * ToTemplate invert a strand that does not follow the standard, that is, does not begin with "CAT"
+    * ToTemplate turns the strand that does not begin with CAT into the standard by switching C <=> G and A <=> T
     */
-    private string ToTemplate(string inverted){
+    private string ToTemplate(string untemplated){
 
-        StringBuilder stringBuilder = new StringBuilder("", inverted.Length);
+        StringBuilder stringBuilder = new StringBuilder("", untemplated.Length);
 
-        int j=0;
-        for(int i =inverted.Length-1; i>= 0; i--){
-            stringBuilder.Insert(j, inverted[i]);
+        for(int i=0; i <untemplated.Length; i++){
+            if(untemplated[i]=='C')
+                stringBuilder.Insert(i, 'G');
+            if(untemplated[i]=='G')
+                stringBuilder.Insert(i, 'C');
+            if(untemplated[i]=='A')
+                stringBuilder.Insert(i, 'T');
+            if(untemplated[i]=='T')
+                stringBuilder.Insert(i, 'A');
         }
+
 
         string template = stringBuilder.ToString();     
 
