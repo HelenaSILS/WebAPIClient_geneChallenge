@@ -122,9 +122,10 @@ namespace WebAPIClient
                 if(job.Type=="DecodeStrand" | job.Type=="CheckGene")
                     job.StrandEncoded=json["job"]["strandEncoded"].ToString();
 
-                if(job.Type=="CheckGene")
+                if(job.Type=="CheckGene"){ 
                     job.Path="gene";
                     job.GeneEncoded=json["job"]["geneEncoded"].ToString();
+                    }
             }
 
         }

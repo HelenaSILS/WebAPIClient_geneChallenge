@@ -68,8 +68,10 @@ namespace WebAPIClient
          foreach(byte b in arrayBytes){
              bin += Convert.ToString(b,2).PadLeft(8, '0');
          }
-         
-         return bin;
+                  
+         string result = ToNucleobase(bin);
+
+         return result;
      }
 
     /*
@@ -77,7 +79,7 @@ namespace WebAPIClient
     */
     private string Encode(string strand){
         int i;
-        string bin = "0b";
+        string bin = "";
         for (i=0; i<strand.Length; i++){
             switch (strand[i]){
                 case 'A':
@@ -90,23 +92,30 @@ namespace WebAPIClient
                     bin=bin+"10"; break;
             }
         }
-    
 
-         return bin;
+        int len = (int)bin.Length/8;
+        var arrayBytes = new byte[len];
+
+        for(i=0; i<len; i++){
+            arrayBytes[i]=Convert.ToByte(bin.Substring((i*8),8),2);
+            
+        }
+
+
+        var result = Convert.ToBase64String(arrayBytes,0,arrayBytes.Length);
+
+         return result;
      }
 
      /*
      * CheckGene returns a strig with value "True", if the 50% of the gene is found in the strand
-     * and returns the string "False" otherwise.
+     * and returns the string "False" otherwise. The data is firstly decode to "ATCG" template.
      */
 
     private string CheckGene(string geneEncoded, string strandEncoded){
 
-         string strandbin = Decode(strandEncoded);
-         string genebin = Decode(geneEncoded);
-
-         string strand = ToNucleobase(strandbin);
-         string gene = ToNucleobase(genebin);
+         string strand = Decode(strandEncoded);
+         string gene = Decode(geneEncoded);
 
          if(!isTemplate(strand))
             strand = ToTemplate(strand);
@@ -170,9 +179,10 @@ namespace WebAPIClient
 
         //the two first characters are always "0b", so they are ignored, that is way int i = 2
         for(int i=2; i<bin.Length; i+=2){
+            stringBuilder.Clear();
             stringBuilder.Append(bin[i]);
             stringBuilder.Append(bin[i+1]);
-
+            
             aux = stringBuilder.ToString();
             if(aux=="00"){
                 result += 'A';
