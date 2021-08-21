@@ -15,7 +15,7 @@ namespace WebAPIClient
     {
 
         private static readonly HttpClient client = new HttpClient();
-        private static Token token = new Token();
+        private static TokenAccess token = new TokenAccess();
         private static Job job = new Job();
         private static JobProcessor jprocessor = new JobProcessor(job);
         public async static Task Main(string[] args)
