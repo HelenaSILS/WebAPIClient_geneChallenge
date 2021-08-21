@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace WebAPIClient
 {
-    public class Token
+    public class TokenAccess
     {
         [JsonPropertyName("accessToken")]
         public string AccessToken {get; set;}
 
-        public Token(){
+        public TokenAccess(){
 
         }
 
